@@ -20,9 +20,7 @@ def main(**kwargs):
     if kwargs['env_file']:
         env.read_envfile(kwargs['env_file'])
     app = create_app(kwargs['env'], )
-    from db import db
-    db.create_all(app=app)
-    # app.run(host=kwargs['host'], port=kwargs['port'])
+    app.run(host=kwargs['host'], port=kwargs['port'])
 
 
 if __name__ == '__main__':

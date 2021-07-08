@@ -15,7 +15,7 @@ from db import db
 class Show(db.Model):
     __tablename__ = "show"
 
-    id = db.Column(Integer, primary_key=True, default=uuid.uuid4().hex)
+    id = db.Column(String(64), primary_key=True)
     name = db.Column(String(64), unique=True)
     describe = db.Column(String(1000))
     price = db.Column(Float, )
@@ -27,4 +27,40 @@ class Show(db.Model):
 
     is_delete = db.Column(Boolean, default=False)
 
-    create_time = db.Column(DateTime)
+    # create_time = db.Column(DateTime)
+
+    def __init__(self, **kwargs):
+        self.id = uuid.uuid4().hex
+        self.name = kwargs.get("name")
+        self.describe = kwargs.get("describe")
+        self.price = kwargs.get("price")
+        self.addr = kwargs.get("addr")
+        self.img = kwargs.get("img")
+        self.start_time = kwargs.get("start_time")
+        self.end_time = kwargs.get("end_time")
+
+    def create(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "describe": self.describe,
+            "price": self.price,
+            "addr": self.addr,
+            "img": self.img,
+        }
+
+# if __name__ == '__main__':
+#     from app.show.show_model import Show
+# show = {
+#     "name": "name",
+#     "describe": "describe",
+#     "price": 111,
+#     "addr": "addr",
+#     "img": "http://img",
+# }
+#     Show.query.all()
+#     # Show.create(**show)

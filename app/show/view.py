@@ -9,6 +9,7 @@ import logging
 from flask import current_app, request
 
 from app.show import show_bp
+from app.show.show_model import Show
 
 
 @show_bp.route('/', methods=['GET'])
@@ -23,49 +24,62 @@ def index():
         return "Hello Test"
 
 
-@show_bp.route('/redis/<set_num>', methods=['GET'])
-def test_redis(set_num):
-    # redis样例
-    redis_client = current_app.extensions['redis']
-    redis_client.set('test_key', set_num)
-    return "test_key is {}".format(redis_client.get('test_key'))
-
-
-@show_bp.route('/add', methods=['POST'])
-def add_user():
+@show_bp.route('/create', methods=['POST'])
+def create_show():
     # 增
-    params = request.form
-    kwargs = dict()
-    kwargs["username"] = params.get("username")
-    kwargs["age"] = params.get("age")
-    user = TestUser.add_user(**kwargs)
-    return user
+    params = request.json
+    # print(params)
+
+    show = Show(**params)
+    show.create()
+    return show.to_dict()
 
 
-@show_bp.route('/update', methods=['POST'])
-def update_user():
-    # 改
-    params = request.form
-    user_id = params.get("user_id")
-    username = params.get("username")
-    age = params.get("age")
-    try:
-        user = TestUser.get_by_id(user_id)
-    except Exception as e:
-        logging.exception(e)
-        raise TestUserError(TestUserError.USER_NOT_FOUND, "get user failed.")
-    user.update_user(username, age)
-    return user.to_dict()
+@show_bp.route('/get', methods=['GET'])
+def get_show():
+    params = request.args
+    show_id = params.get('show_id', None, str)
+    # print(params)
+    # show_id = params.get("show_id")
+    # show = Show.query.get(show_id)
+    show = Show.query.filter_by(id=show_id, is_delete=False).first()
+    if show:
+        return show.to_dict()
+    return
 
 
-@show_bp.route('/delete', methods=['DELETE'])
-def delete_user():
-    # 删
-    params = request.form
-    user_id = params.get("user_id")
-    try:
-        user = TestUser.get_by_id(user_id)
-    except Exception as e:
-        logging.exception(e)
-        raise TestUserError(TestUserError.USER_NOT_FOUND, "get user failed.")
-    return {"user_id": user.delete_user()}
+@show_bp.route('/list', methods=['GET'])
+def get_show_list():
+    params = request.args
+    page = params.get('page', 1, int)
+    per_page = params.get('rows', 10, int)
+
+    offset = (page - 1) * per_page
+    kwargs = {
+        'offset': offset,
+        'per_page': per_page,
+        'is_delete': False,
+        # 'user_id': g.user_id
+    }
+    # print(params)
+    # show_id = params.get("show_id")
+    # show = Show.query.filter_by(id=show_id).first()
+    # return show.to_dict()
+    total = Show.query.count()
+    rows = [item.to_dict() for item in Show.query.all()]
+    return {
+        'total': total,
+        'rows': rows
+    }
+
+
+# @show_bp.route('/delete', methods=['DELETE'])
+# def delete_show():
+#     params = request.args
+#     show_id = params.get('show_id', None, str)
+#     # print(params)
+#     # show_id = params.get("show_id")
+#     show = Show.query.get(show_id)
+#     if show:
+#         return show.to_dict()
+#     return
