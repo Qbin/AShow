@@ -29,6 +29,15 @@
     └── server.py   # gunicorn运行入口
     ```
 
+### 更新数据库
+1. 初始化
+    > flask db init
+2. 查看变化
+    > migrations/env.py 中引入 "from app.show.show_model import Show"
+    > flask db migrate
+3. 更新
+    > flask db upgrade
+
 ### 启动
 1. 单机启动
     > python run.py
