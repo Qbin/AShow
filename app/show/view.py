@@ -55,8 +55,8 @@ def get_show_list():
     params = request.args
     page = params.get('page', 1, int)
     per_page = params.get('rows', 10, int)
-    s_time = params.get('s_time', "", str)  # 时间格式为 2020-01-02
-    e_time = params.get('e_time', "", str)  # 时间格式为 2020-01-02
+    s_time = params.get('s_time', "1000-01-01", str)  # 时间格式为 2020-01-02
+    e_time = params.get('e_time', "9999-12-31", str)  # 时间格式为 2020-01-02
 
     s_time = date.fromisoformat(s_time)
     e_time = date.fromisoformat(e_time)
