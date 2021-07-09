@@ -7,7 +7,7 @@
 
 import uuid
 
-from sqlalchemy.types import Integer, String, DateTime, Float, Boolean
+from sqlalchemy.types import String, Date, Float, Boolean
 
 from db import db
 
@@ -22,8 +22,8 @@ class Show(db.Model):
     addr = db.Column(String(200))
     img = db.Column(String(500))
 
-    start_time = db.Column(DateTime)
-    end_time = db.Column(DateTime)
+    start_time = db.Column(Date)
+    end_time = db.Column(Date)
 
     is_delete = db.Column(Boolean, default=False)
 
@@ -51,6 +51,8 @@ class Show(db.Model):
             "price": self.price,
             "addr": self.addr,
             "img": self.img,
+            "start_time": self.start_time.strftime('%Y-%m-%d'),
+            "end_time": self.end_time.strftime('%Y-%m-%d'),
         }
 
 # if __name__ == '__main__':

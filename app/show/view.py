@@ -7,6 +7,8 @@
 import logging
 
 from flask import current_app, request
+from sqlalchemy import and_
+from datetime import date
 
 from app.show import show_bp
 from app.show.show_model import Show
@@ -53,25 +55,37 @@ def get_show_list():
     params = request.args
     page = params.get('page', 1, int)
     per_page = params.get('rows', 10, int)
+    s_time = params.get('s_time', "", str)  # 时间格式为 2020-01-02
+    e_time = params.get('e_time', "", str)  # 时间格式为 2020-01-02
+
+    s_time = date.fromisoformat(s_time)
+    e_time = date.fromisoformat(e_time)
 
     offset = (page - 1) * per_page
-    kwargs = {
-        'offset': offset,
-        'per_page': per_page,
-        'is_delete': False,
-        # 'user_id': g.user_id
-    }
-    # print(params)
-    # show_id = params.get("show_id")
-    # show = Show.query.filter_by(id=show_id).first()
-    # return show.to_dict()
-    total = Show.query.count()
-    rows = [item.to_dict() for item in Show.query.all()]
+    # kwargs = {
+    #     'offset': offset,
+    #     'per_page': per_page,
+    #     'is_delete': False,
+    #     's_time': s_time,
+    #     'e_time': e_time,
+    #     # 'user_id': g.user_id
+    #
+    # }
+    show_list_query = Show.query.filter(
+        and_(
+            Show.is_delete == False,
+            Show.start_time <= e_time,
+            Show.end_time >= s_time
+        )
+    )
+    total = show_list_query.count()
+
+    rows = [item.to_dict() for item in show_list_query.offset(offset).limit(per_page).all()]
+
     return {
         'total': total,
         'rows': rows
     }
-
 
 # @show_bp.route('/delete', methods=['DELETE'])
 # def delete_show():
