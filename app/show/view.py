@@ -71,7 +71,7 @@ def get_show_list():
     #     # 'user_id': g.user_id
     #
     # }
-    show_list_query = Show.query.filter(
+    show_list_query = Show.query.order_by(Show.start_time.desc()).filter(
         and_(
             Show.is_delete == False,
             Show.start_time <= e_time,
