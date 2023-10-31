@@ -87,13 +87,17 @@ def get_show_list():
         'rows': rows
     }
 
-# @show_bp.route('/delete', methods=['DELETE'])
-# def delete_show():
-#     params = request.args
-#     show_id = params.get('show_id', None, str)
-#     # print(params)
-#     # show_id = params.get("show_id")
-#     show = Show.query.get(show_id)
-#     if show:
-#         return show.to_dict()
-#     return
+
+@show_bp.route('/delete', methods=['DELETE'])
+def delete_show():
+    params = request.args
+    show_id = params.get('show_id', None, str)
+    # print(params)
+    # show_id = params.get("show_id")
+    show = Show.query.get(show_id)
+
+    if show:
+        show.is_delete = True
+
+        return show.to_dict()
+    return

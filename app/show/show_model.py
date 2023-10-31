@@ -21,6 +21,7 @@ class Show(db.Model):
     price = db.Column(Float, )
     addr = db.Column(String(200))
     img = db.Column(String(500))
+    website = db.Column(String(500))
 
     start_time = db.Column(Date)
     end_time = db.Column(Date)
@@ -38,6 +39,7 @@ class Show(db.Model):
         self.img = kwargs.get("img")
         self.start_time = kwargs.get("start_time")
         self.end_time = kwargs.get("end_time")
+        self.website = kwargs.get("website")
 
     def create(self):
         db.session.add(self)
@@ -51,6 +53,7 @@ class Show(db.Model):
             "price": self.price,
             "addr": self.addr,
             "img": self.img,
+            "website": self.website,
             "start_time": self.start_time.strftime('%Y-%m-%d'),
             "end_time": self.end_time.strftime('%Y-%m-%d'),
         }
