@@ -28,9 +28,18 @@
     ├── run.py  # 单机运行入口
     └── server.py   # gunicorn运行入口
     ```
+### mysql初始化
+1. 创建数据库
+```
+CREATE DATABASE art_show IF NOT EXISTS art_show
+DEFAULT CHARACTER SET utf8
+COLLATE utf_general_ci;
+```
+
 
 ### 更新数据库
 1. 初始化
+	> export FLASK_APP=server:app
     > flask db init
 2. 查看变化
     > migrations/env.py 中引入 "from app.show.show_model import Show"

@@ -15,7 +15,10 @@ class BaseConfig:
     TESTING = False
 
     # Mysql
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:123456@localhost/art_show'
+    if os.environ.get("SQLALCHEMY_DATABASE_URI"):
+        SQLALCHEMY_DATABASE_URI = os.environ.get("SQLALCHEMY_DATABASE_URI")
+    else:
+        SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:123456@localhost/art_show'
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SQLALCHEMY_TRACK_MODIFICATIONS = True
 
