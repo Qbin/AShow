@@ -1,5 +1,4 @@
-#FROM python:3.7.6
-FROM gaia:v0.1.1
+FROM python:3.7.6
 
 COPY . /opt
 WORKDIR /opt

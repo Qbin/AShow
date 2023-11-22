@@ -1,0 +1,61 @@
+version: '3'
+services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    networks:
+      - mynetwork
+    depends_on:
+      - ashow
+  mysql:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: art_show
+      MYSQL_USER: test
+      MYSQL_PASSWORD: 123456
+      MYSQL_CHARSET: utf8mb4
+      MYSQL_COLLATION: utf8mb4_unicode_ci
+      MYSQL_CLIENT_CHARSET: utf8mb4
+    networks:
+      - mynetwork
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+
+  #  mongo:
+  #    image: mongo:latest
+  #    networks:
+  #      - mynetwork
+  #    volumes:
+  #      - ./mongo-data:/data/db
+
+  ashow:
+    image: bbq/ashow:v0.5
+    environment:
+      FLASK_APP: server:app
+      SQLALCHEMY_DATABASE_URI: mysql+pymysql://root:root_password@mysql:3306/art_show
+    build:
+      context: ./ashow
+    networks:
+      - mynetwork
+    depends_on:
+      - mysql
+    command: [ "sleep", "inf" ]
+
+#  xwz:
+#    build:
+#      context: ./xwz
+#    networks:
+#      - mynetwork
+#    depends_on:
+#      - mongo
+
+networks:
+  mynetwork:
+
+volumes:
+  mysql-data:
+  mongo-data:
