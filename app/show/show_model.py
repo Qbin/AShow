@@ -6,7 +6,9 @@
 # @File    : test_model.py
 
 import uuid
+from datetime import date
 
+from sqlalchemy import and_
 from sqlalchemy.types import String, Date, Float, Boolean
 
 from app.show.show_error import ShowError
@@ -58,6 +60,38 @@ class Show(db.Model):
         for k, v in kwargs.items():
             setattr(self, k, v)
         db.session.commit()
+
+    @classmethod
+    def get_list(cls, page, per_page, s_time, e_time, show_name):
+        s_time = date.fromisoformat(s_time)
+        e_time = date.fromisoformat(e_time)
+
+        offset = (page - 1) * per_page
+        # kwargs = {
+        #     'offset': offset,
+        #     'per_page': per_page,
+        #     'is_delete': False,
+        #     's_time': s_time,
+        #     'e_time': e_time,
+        #     # 'user_id': g.user_id
+        #
+        # }
+        show_list_query = cls.query.order_by(Show.start_time.desc()).filter(
+            and_(
+                Show.is_delete == False,
+                Show.start_time <= e_time,
+                Show.end_time >= s_time,
+                Show.name.ilike(f'%{show_name}%')
+            )
+        )
+        total = show_list_query.count()
+
+        rows = [item.to_dict() for item in show_list_query.offset(offset).limit(per_page).all()]
+
+        return {
+            'total': total,
+            'rows': rows
+        }
 
     def to_dict(self):
         return {

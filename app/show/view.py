@@ -7,8 +7,6 @@
 import logging
 
 from flask import current_app, request
-from sqlalchemy import and_
-from datetime import date
 
 from app.show import show_bp
 from app.show.show_model import Show
@@ -67,35 +65,9 @@ def get_show_list():
     per_page = params.get('rows', 10, int)
     s_time = params.get('s_time', "1000-01-01", str)  # 时间格式为 2020-01-02
     e_time = params.get('e_time', "9999-12-31", str)  # 时间格式为 2020-01-02
+    show_name = params.get('show_name', "", str)  # 时间格式为 2020-01-02
 
-    s_time = date.fromisoformat(s_time)
-    e_time = date.fromisoformat(e_time)
-
-    offset = (page - 1) * per_page
-    # kwargs = {
-    #     'offset': offset,
-    #     'per_page': per_page,
-    #     'is_delete': False,
-    #     's_time': s_time,
-    #     'e_time': e_time,
-    #     # 'user_id': g.user_id
-    #
-    # }
-    show_list_query = Show.query.order_by(Show.start_time.desc()).filter(
-        and_(
-            Show.is_delete == False,
-            Show.start_time <= e_time,
-            Show.end_time >= s_time
-        )
-    )
-    total = show_list_query.count()
-
-    rows = [item.to_dict() for item in show_list_query.offset(offset).limit(per_page).all()]
-
-    return {
-        'total': total,
-        'rows': rows
-    }
+    return Show.get_list(page, per_page, s_time, e_time, show_name)
 
 
 @show_bp.route('/delete', methods=['DELETE'])
