@@ -9,6 +9,7 @@ import uuid
 
 from sqlalchemy.types import String, Date, Float, Boolean
 
+from app.show.show_error import ShowError
 from db import db
 
 
@@ -41,8 +42,21 @@ class Show(db.Model):
         self.end_time = kwargs.get("end_time")
         self.website = kwargs.get("website")
 
-    def create(self):
+    def create_show(self):
         db.session.add(self)
+        db.session.commit()
+
+    @classmethod
+    def get_by_id(cls, show_id):
+        show = cls.query.filter_by(id=show_id, is_delete=False).first()
+        if show:
+            return show
+        else:
+            raise ShowError(ShowError.SHOW_NOT_FOUND, "没有id为%s的show" % show_id)
+
+    def update_show(self, **kwargs):
+        for k, v in kwargs.items():
+            setattr(self, k, v)
         db.session.commit()
 
     def to_dict(self):

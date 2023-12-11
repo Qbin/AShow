@@ -33,7 +33,17 @@ def create_show():
     # print(params)
 
     show = Show(**params)
-    show.create()
+    show.create_show()
+    return show.to_dict()
+
+
+@show_bp.route('/update', methods=['PUT'])
+def update_show():
+    # 增
+    params = request.json
+    # print(params)
+    show = Show.get_by_id(params.pop("show_id"))
+    show.update_show(**params)
     return show.to_dict()
 
 
@@ -44,7 +54,7 @@ def get_show():
     # print(params)
     # show_id = params.get("show_id")
     # show = Show.query.get(show_id)
-    show = Show.query.filter_by(id=show_id, is_delete=False).first()
+    show = Show.get_by_id(show_id)
     if show:
         return show.to_dict()
     return
