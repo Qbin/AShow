@@ -4,11 +4,12 @@
 # @Author  : qinbinbin
 # @email   : qinbinbin@360.cn
 # @File    : test_model.py
-
 import uuid
-from datetime import date
+import logging
 
+from datetime import date
 from sqlalchemy import and_
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.types import String, Date, Float, Boolean
 
 from app.show.show_error import ShowError
@@ -45,8 +46,13 @@ class Show(db.Model):
         self.website = kwargs.get("website")
 
     def create_show(self):
-        db.session.add(self)
-        db.session.commit()
+        try:
+            db.session.add(self)
+            db.session.commit()
+        except IntegrityError as e:
+            db.session.rollback()
+            logging.exception(e)
+            raise ShowError(ShowError.SHOW_CREATE_FAILED, "创建show失败")
 
     @classmethod
     def get_by_id(cls, show_id):

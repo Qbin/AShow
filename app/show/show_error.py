@@ -6,6 +6,7 @@ class ShowError(BaseError):
     SHOW_AUTHENTICATED_EORROR = 20001
     SHOW_NOT_LOGIN = 20002
     SHOW_NOT_FOUND = 20003
+    SHOW_CREATE_FAILED = 20004
 
     def error(self):
         return {'error': self.errno, 'errmsg': self.message}
