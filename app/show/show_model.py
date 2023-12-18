@@ -14,6 +14,8 @@ from sqlalchemy.types import String, Date, Float, Boolean
 
 from app.show.show_error import ShowError
 from db import db
+from extra.llm import get_chat_completions_data
+from extra.website_text import get_all_text, clear_character
 
 
 class Show(db.Model):
@@ -98,6 +100,22 @@ class Show(db.Model):
             'total': total,
             'rows': rows
         }
+
+    @classmethod
+    def get_show_by_website(cls, url):
+        res = get_all_text(url)
+        content = clear_character(res)
+
+        if content:
+            content = "下面文字中，准确给出展览的开始时间（start_time）、结束时间（end_time）、地点(location)、票价（price）和名称(name)，并以json形式返回，若某个字段未提及，则返回空值期望格式[{{}}]。\n {}".format(
+                content)
+            message = [
+                {"role": "user", "content": content},
+            ]
+            logging.info(message)
+            show_list = get_chat_completions_data(messages=message)
+            logging.info(show_list)
+            return show_list
 
     def to_dict(self):
         return {

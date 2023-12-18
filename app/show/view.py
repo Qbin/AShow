@@ -83,3 +83,12 @@ def delete_show():
 
         return show.to_dict()
     return
+
+
+@show_bp.route('/get_show_by_website', methods=['GET'])
+def get_show_by_website():
+    params = request.args
+    url = params.get('url', None, str)
+    if url:
+        return Show.get_show_by_website(url)
+    return
