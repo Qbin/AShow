@@ -8,10 +8,21 @@ import requests
 from bs4 import BeautifulSoup
 
 from extra.llm import get_chat_completions_data
+from urllib.parse import urlparse
+
+
+def is_valid_url(url):
+    try:
+        result = urlparse(url)
+        return all([result.scheme, result.netloc])
+    except ValueError:
+        return False
 
 
 def get_all_text(url):
     # 发送HTTP请求获取网页内容
+    if is_valid_url(url) is False:
+        return None
     response = requests.get(url)
 
     # 检查请求是否成功
@@ -32,6 +43,8 @@ def get_all_text(url):
 
 def clear_character(sentence):
     """ 只保留汉字、字母、数字 """
+    if sentence is None:
+        return None
     pattern = re.compile('[^，。！？.:：\u4e00-\u9fa5^a-zA-Z^0-9]')
     line = re.sub(pattern, '', sentence.lower())
     new_sentence = ''.join(line.split())  # 去除空白
@@ -39,6 +52,8 @@ def clear_character(sentence):
 
 
 def test_get_all_text(url):
+    if is_valid_url(url) is False:
+        return None
     res = get_all_text(url)
     return clear_character(res)
 

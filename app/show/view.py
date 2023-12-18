@@ -5,11 +5,15 @@
 # @email   : qinbinbin@360.cn
 # @File    : view.py
 import logging
+from threading import Lock
 
 from flask import current_app, request
 
 from app.show import show_bp
 from app.show.show_model import Show
+from common.base_error import BaseError
+
+lock = Lock()
 
 
 @show_bp.route('/', methods=['GET'])
@@ -87,8 +91,22 @@ def delete_show():
 
 @show_bp.route('/get_show_by_website', methods=['GET'])
 def get_show_by_website():
-    params = request.args
-    url = params.get('url', None, str)
-    if url:
-        return Show.get_show_by_website(url)
-    return
+    # 判断互斥锁是否已被持有
+    if lock.locked():
+        raise BaseError(BaseError.SERVER_BUSY, '服务繁忙')  # '服务繁忙'
+
+    acquired = lock.acquire(blocking=False)
+
+    if acquired:
+        try:
+            # 在这里处理请求
+            params = request.args
+            url = params.get('url', None, str)
+            if url:
+                return Show.get_show_by_website(url)
+        finally:
+            # 在请求处理完成后释放互斥锁
+            lock.release()
+    else:
+        # 无法获取锁，返回自定义的响应
+        BaseError(BaseError.SERVER_BUSY, '服务繁忙')
