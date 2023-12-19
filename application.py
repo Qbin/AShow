@@ -98,7 +98,8 @@ def create_response_handler(app):
     @app.after_request
     def process_response(response):
         res_json = response.get_json()
-        if res_json is not None and "data" in res_json.keys() and "context" in res_json.keys():
+        if (res_json is not None
+                and isinstance(res_json, dict) and "data" in res_json.keys() and "context" in res_json.keys()):
             return response
         if isinstance(response.get_data(), bytes):
             return custom_response(response.get_data(), response.status_code)
