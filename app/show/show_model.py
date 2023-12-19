@@ -4,6 +4,7 @@
 # @Author  : qinbinbin
 # @email   : qinbinbin@360.cn
 # @File    : test_model.py
+import json
 import uuid
 import logging
 
@@ -87,8 +88,8 @@ class Show(db.Model):
         show_list_query = cls.query.order_by(Show.start_time.desc()).filter(
             and_(
                 Show.is_delete == False,
-                Show.start_time <= e_time,
-                Show.end_time >= s_time,
+                Show.start_time >= s_time,
+                Show.end_time <= e_time,
                 Show.name.ilike(f'%{show_name}%')
             )
         )
@@ -107,14 +108,17 @@ class Show(db.Model):
         content = clear_character(res)
 
         if content:
-            content = "下面文字中，准确给出展览的开始时间（start_time）、结束时间（end_time）、地点(location)、票价（price）和名称(name)，并以json形式返回，若某个字段未提及，则返回空值期望格式[{{}}]。\n {}".format(
-                content)
-            message = [
-                {"role": "user", "content": content},
-            ]
-            logging.info(message)
-            show_list = get_chat_completions_data(messages=message)
-            logging.info(show_list)
+            chunk_size = 4000
+            show_list = []
+            for i in range(0, len(content), chunk_size):
+                content_segments = content[i:i + chunk_size]
+                formatted_content = "下面文字中，准确给出展览的开始时间（start_time）、结束时间（end_time）、地点(location)、票价（price）和名称(name)，并以json形式返回，若某个字段未提及，则返回空值期望格式[{{}}]。\n {}".format(
+                    content_segments)
+                message = [
+                    {"role": "user", "content": formatted_content},
+                ]
+                shows_str = get_chat_completions_data(messages=message)
+                show_list += json.loads(shows_str)
             return show_list
 
     def to_dict(self):

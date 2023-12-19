@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2023/12/13 14:31
 # @File    : website_text.py
+import json
 import re
 
 import requests
@@ -63,17 +64,24 @@ def test_llm(url):
     content = clear_character(res)
 
     if content:
-        content = "下面文字中，准确给出展览的开始时间（start_time）、结束时间（end_time）、地点(location)、票价（price）和名称(name)，并以json形式返回，若某个字段未提及，则返回空值期望格式[{{}}]。\n {}".format(
-            content)
-        message = [
-            {"role": "user", "content": content},
-        ]
-        return get_chat_completions_data(messages=message)
+        chunk_size = 3900
+        show_list = []
+        for i in range(0, len(content), chunk_size):
+            content_segments = content[i:i + chunk_size]
+            formatted_content = "下面文字中，准确给出展览的开始时间（start_time）、结束时间（end_time）、地点(location)、票价（price）和名称(name)，并以json形式返回，若某个字段未提及，则返回空值期望格式[{{}}]。\n {}".format(
+                content_segments)
+            message = [
+                {"role": "user", "content": formatted_content},
+            ]
+            shows_str = get_chat_completions_data(messages=message)
+            show_list += json.loads(shows_str)
+        return show_list
 
 
 if __name__ == '__main__':
     # 用实际的网页URL调用函数
     url = 'https://mp.weixin.qq.com/s/6KUUuQ9M3pI-v6QoRX02WA'
+    # url = 'https://mp.weixin.qq.com/s/oKXxJ8zjnEaUBvcmN8KHEQ'
     print("========================get_all_text=========================")
     website_text = test_get_all_text(url)
     print(website_text)
