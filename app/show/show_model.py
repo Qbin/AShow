@@ -25,7 +25,7 @@ class Show(db.Model):
     id = db.Column(String(64), primary_key=True)
     name = db.Column(String(64), unique=True)
     describe = db.Column(String(1000))
-    price = db.Column(Float, )
+    price = db.Column(String(200))
     addr = db.Column(String(200))
     img = db.Column(String(500))
     website = db.Column(String(500))

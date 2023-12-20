@@ -68,7 +68,7 @@ def test_llm(url):
         show_list = []
         for i in range(0, len(content), chunk_size):
             content_segments = content[i:i + chunk_size]
-            formatted_content = "下面文字中，准确给出展览的开始时间（start_time）、结束时间（end_time）、地点(location)、票价（price）和名称(name)，并以json形式返回，若某个字段未提及，则返回空值期望格式[{{}}]。\n {}".format(
+            formatted_content = "下面文字中，准确给出展览的开始时间（start_time）、结束时间（end_time）、地点(location)、票价（price）和名称(name)，并以json形式返回，若某个字段未提及，则返回空值期望格式json,如[{{}}]。\n {}".format(
                 content_segments)
             message = [
                 {"role": "user", "content": formatted_content},
