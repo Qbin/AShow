@@ -85,11 +85,11 @@ class Show(db.Model):
         #     # 'user_id': g.user_id
         #
         # }
-        show_list_query = cls.query.order_by(Show.start_time.desc()).filter(
+        show_list_query = cls.query.order_by(Show.end_time.desc()).filter(
             and_(
                 Show.is_delete == False,
-                Show.start_time >= s_time,
-                Show.end_time <= e_time,
+                Show.start_time <= e_time,
+                Show.end_time >= s_time,
                 Show.name.ilike(f'%{show_name}%')
             )
         )
