@@ -38,14 +38,15 @@ class Show(db.Model):
     # create_time = db.Column(DateTime)
 
     def __init__(self, **kwargs):
+        logging.info("create show {}".format(kwargs))
         self.id = uuid.uuid4().hex
         self.name = kwargs.get("name")
         self.describe = kwargs.get("describe")
         self.price = kwargs.get("price")
         self.addr = kwargs.get("addr")
         self.img = kwargs.get("img")
-        self.start_time = kwargs.get("start_time", "1000-01-01")
-        self.end_time = kwargs.get("end_time", "9999-12-31")
+        self.start_time = kwargs.get("start_time") if kwargs.get("start_time") else "1000-01-01"
+        self.end_time = kwargs.get("end_time") if kwargs.get("end_time") else "9999-12-31"
         self.website = kwargs.get("website")
 
     def create_show(self):
