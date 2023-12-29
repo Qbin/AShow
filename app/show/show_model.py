@@ -85,7 +85,8 @@ class Show(db.Model):
         #     # 'user_id': g.user_id
         #
         # }
-        show_list_query = cls.query.order_by(Show.end_time.desc()).filter(
+        # show_list_query = cls.query.order_by(Show.end_time.desc()).filter(
+        show_list_query = cls.query.order_by(Show.end_time).filter(
             and_(
                 Show.is_delete == False,
                 Show.start_time <= e_time,
