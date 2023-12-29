@@ -44,8 +44,8 @@ class Show(db.Model):
         self.price = kwargs.get("price")
         self.addr = kwargs.get("addr")
         self.img = kwargs.get("img")
-        self.start_time = kwargs.get("start_time")
-        self.end_time = kwargs.get("end_time")
+        self.start_time = kwargs.get("start_time", "1000-01-01")
+        self.end_time = kwargs.get("end_time", "9999-12-31")
         self.website = kwargs.get("website")
 
     def create_show(self):
