@@ -30,8 +30,8 @@ class Show(db.Model):
     img = db.Column(String(500))
     website = db.Column(String(500))
 
-    start_time = db.Column(Date)
-    end_time = db.Column(Date)
+    start_time = db.Column(Date, default=date(1000, 1, 1))
+    end_time = db.Column(Date, default=date(9999, 12, 31))
 
     is_delete = db.Column(Boolean, default=False)
 
