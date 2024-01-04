@@ -7,6 +7,7 @@
 import json
 import uuid
 import logging
+import datetime
 
 from datetime import date
 from sqlalchemy import and_
@@ -132,8 +133,9 @@ class Show(db.Model):
             "addr": self.addr,
             "img": self.img,
             "website": self.website,
-            "start_time": self.start_time.strftime('%Y-%m-%d'),
-            "end_time": self.end_time.strftime('%Y-%m-%d'),
+            "start_time": self.start_time.strftime('%Y-%m-%d') if self.start_time != datetime.date(1000, 1,
+                                                                                                   1) else None,
+            "end_time": self.end_time.strftime('%Y-%m-%d') if self.end_time != datetime.date(9999, 12, 31) else None,
         }
 
 # if __name__ == '__main__':
