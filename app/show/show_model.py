@@ -69,6 +69,10 @@ class Show(db.Model):
 
     def update_show(self, **kwargs):
         for k, v in kwargs.items():
+            if k == "end_time" and not v:
+                v = date(9999, 12, 31)
+            if k == "start_time" and not v:
+                v = date(1000, 1, 1)
             setattr(self, k, v)
         db.session.commit()
 
